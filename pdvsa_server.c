@@ -6,7 +6,7 @@
 
 #include "pdvsa.h"
 #include "centro.h"
-
+#include "md5.h"
 
 pthread_mutex_t mutex_inventario = PTHREAD_MUTEX_INITIALIZER;
 
@@ -63,9 +63,11 @@ validar_respuesta_1_svc(reto *argp, struct svc_req *rqstp)
 {
 	static ticket  result;
 	char mensaje[80];
+	char mensaje2[80];
 	sprintf( mensaje, "%d", argp->reto );
 	unsigned *d = md5(mensaje, strlen(mensaje));
-	if(strcmp(mensaje,argp->respuesta)==0){
+	sprintf( mensaje2, "%u", argp->respuesta );
+	if(strcmp(mensaje,mensaje2)==0){
 	  result.numero = 1;
 	  result.ip_bomba = nombre;
 	  result.hora = 1;

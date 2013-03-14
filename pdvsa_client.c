@@ -14,6 +14,7 @@
 #include <netdb.h> 
 #include <sys/time.h>
 #include "pdvsa.h"
+#include "md5.h"
 
 /*Archivo para escribir el log de la bomba*/
 FILE* log_bomba;
@@ -37,36 +38,36 @@ int* dist_o;
 void
 pdvsa_prog_1(char *host)
 {
-	CLIENT *clnt;
-	int  *result_1;
-	int  pedir_tiempos_1_arg;
-	int  *result_2;
-	ticket  pedir_gasolina_1_arg;
-	ticket  *result_3;
-	reto  validar_respuesta_1_arg;
+  CLIENT *clnt;
+  int  *result_1;
+  int  pedir_tiempos_1_arg;
+  int  *result_2;
+  ticket  pedir_gasolina_1_arg;
+  ticket  *result_3;
+  reto  validar_respuesta_1_arg;
 
 #ifndef	DEBUG
-	clnt = clnt_create (host, PDVSA_PROG, PDVSA_VERS, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (host);
-		exit (1);
-	}
+  clnt = clnt_create (host, PDVSA_PROG, PDVSA_VERS, "udp");
+  if (clnt == NULL) {
+    clnt_pcreateerror (host);
+    exit (1);
+  }
 #endif	/* DEBUG */
 
-	result_1 = pedir_tiempos_1(&pedir_tiempos_1_arg, clnt);
-	if (result_1 == (int *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-	result_2 = pedir_gasolina_1(&pedir_gasolina_1_arg, clnt);
-	if (result_2 == (int *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-	result_3 = validar_respuesta_1(&validar_respuesta_1_arg, clnt);
-	if (result_3 == (ticket *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
+  result_1 = pedir_tiempos_1(&pedir_tiempos_1_arg, clnt);
+  if (result_1 == (int *) NULL) {
+    clnt_perror (clnt, "call failed");
+  }
+  result_2 = pedir_gasolina_1(&pedir_gasolina_1_arg, clnt);
+  if (result_2 == (int *) NULL) {
+    clnt_perror (clnt, "call failed");
+  }
+  result_3 = validar_respuesta_1(&validar_respuesta_1_arg, clnt);
+  if (result_3 == (ticket *) NULL) {
+    clnt_perror (clnt, "call failed");
+  }
 #ifndef	DEBUG
-	clnt_destroy (clnt);
+  clnt_destroy (clnt);
 #endif	 /* DEBUG */
 }
 
@@ -146,19 +147,19 @@ void leer_entrada(int argc, char** argv){
       int i;
       /*Inicializar el orden*/
       for(i = 0; i < centros; i++)
-		dist_o[i] = i; 
+	dist_o[i] = i; 
 
       char nombre[20];
       char host[20];
       //int num; 
 
       for(i = 0; i < centros; i++){ 
-		fscanf(entrada,"%[^'&']&%s\n",nombre,host);
-		dist_n[i] = malloc(sizeof(char*)*strlen(nombre));
-		strcpy(dist_n[i],nombre);
-		dist_h[i] = malloc(sizeof(char*)*strlen(host));
-		strcpy(dist_h[i],host);
-		//dist_p[i] = num;
+	fscanf(entrada,"%[^'&']&%s\n",nombre,host);
+	dist_n[i] = malloc(sizeof(char*)*strlen(nombre));
+	strcpy(dist_n[i],nombre);
+	dist_h[i] = malloc(sizeof(char*)*strlen(host));
+	strcpy(dist_h[i],host);
+	//dist_p[i] = num;
       }
       fclose(entrada);
     }
@@ -177,19 +178,6 @@ void liberar_mem(){
   //free(dist_p);
 }
 
-/* Algoritmo de ordenamiento */ 
-void ordenar_centros(int izq, int der){
-  if (der - izq >= 2) {
-    /*Encuentro el elemento del medio del arreglo */
-    int med=((izq+der+1)/2);
-    /*Ordeno la parte iquierda del arreglo */
-    ordenar_centros(izq,med);
-    /*Ordeno la parte derecha del arreglo*/
-    ordenar_centros(med,der);
-    /*Uso el algoritmo de mezcla para ordenar todo el arreglo*/
-    merge(izq,med,der);
-  }
-}
 
 /* Algoritmo de ordenamiento de mezcla */
 void merge(int izq, int med, int der){
@@ -229,6 +217,21 @@ void merge(int izq, int med, int der){
   free(aux);
 }
 
+/* Algoritmo de ordenamiento */ 
+void ordenar_centros(int izq, int der){
+  if (der - izq >= 2) {
+    /*Encuentro el elemento del medio del arreglo */
+    int med=((izq+der+1)/2);
+    /*Ordeno la parte iquierda del arreglo */
+    ordenar_centros(izq,med);
+    /*Ordeno la parte derecha del arreglo*/
+    ordenar_centros(med,der);
+    /*Uso el algoritmo de mezcla para ordenar todo el arreglo*/
+    merge(izq,med,der);
+  }
+}
+
+
 /*Funcion que se encarga de pedir los tiempos de respuesta 
  * de los centros */
 void pedir_tiempos(){
@@ -239,27 +242,27 @@ void pedir_tiempos(){
   
   int i;
   for(i=0; i < centros; i++){
-	#ifndef	DEBUG
-	clnt = clnt_create (dist_h[i], PDVSA_PROG, PDVSA_VERS, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (dist_h[i]);
-		exit (1);
-	}
-	#endif	/* DEBUG */
+#ifndef	DEBUG
+    clnt = clnt_create (dist_h[i], PDVSA_PROG, PDVSA_VERS, "udp");
+    if (clnt == NULL) {
+      clnt_pcreateerror (dist_h[i]);
+      exit (1);
+    }
+#endif	/* DEBUG */
 	
-    result_1 = pedir_tiempos_1(&pedir_tiempos_1_arg, clnt);
-	if (result_1 == (int *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-	else{
-	    //printf("TIEMPO ES: %d \n",*result_1);
-	}
+    result_1 = pedir_tiempos_1(pedir_tiempos_1_arg, clnt);
+    if (result_1 == (int *) NULL) {
+      clnt_perror (clnt, "call failed");
+    }
+    else{
+      //printf("TIEMPO ES: %d \n",*result_1);
+    }
 	
     dist_ti[i] = *result_1;
     //printf("El tiempo del arreglo: %d \n",dist_ti[i]);
-	#ifndef	DEBUG
-	clnt_destroy (clnt);
-	#endif	 /* DEBUG */
+#ifndef	DEBUG
+    clnt_destroy (clnt);
+#endif	 /* DEBUG */
   }
 }
 
@@ -271,49 +274,46 @@ void pedir_gasolina(){
   ticket *ticket_aux;
   int i;
   for( i=0; i < centros; i++){
-    	#ifndef	DEBUG
-	clnt = clnt_create (dist_h[i], PDVSA_PROG, PDVSA_VERS, "udp");
-	if (clnt == NULL) {
-		clnt_pcreateerror (dist_h[i]);
-		exit (1);
+#ifndef	DEBUG
+    clnt = clnt_create (dist_h[i], PDVSA_PROG, PDVSA_VERS, "udp");
+    if (clnt == NULL) {
+      clnt_pcreateerror (dist_h[i]);
+      exit (1);
+    }
+#endif	/* DEBUG */
+    result_1 = pedir_gasolina_1(&pase, clnt);
+    if (result_1 == (int *) NULL) {
+      clnt_perror (clnt, "call failed");
+    }
+    else{
+      //printf("La respuesta es: %d \n",*result_1);
+    }
+    /* Si el centro me puede atender */  
+    if (*result_1 == (-1)){
+      if(dist_ti[dist_o[i]] + tiempo <= 480){	 
+	usleep(dist_ti[dist_o[i]] * 100000);
+	if( consumo * dist_ti[dist_o[i]]  > inventario)
+	  inventario = 38000;
+	else{ 
+	  inventario = inventario - (consumo * dist_ti[dist_o[i]] ); // 
+	  inventario = inventario + 38000;
 	}
-	#endif	/* DEBUG */
-	result_1 = pedir_gasolina_1(&pase, clnt);
-	if (result_1 == (int *) NULL) {
-		clnt_perror (clnt, "call failed");
-	}
-	else{
-	    //printf("La respuesta es: %d \n",*result_1);
-	}
-        /* Si el centro me puede atender */  
-        if (*result_1 == (-1)){
-	    if(dist_ti[dist_o[i]] + tiempo <= 480){	 
-             usleep(dist_ti[dist_o[i]] * 100000);
-             if( consumo * dist_ti[dist_o[i]]  > inventario)
-		   inventario = 38000;
-	    else{ 
-	       inventario = inventario - (consumo * dist_ti[dist_o[i]] ); // 
-	       inventario = inventario + 38000;
-            }
-	    tiempo = tiempo + dist_ti[dist_o[i]] ;
-	    }    
-        } 
-        if (*result_1 > 0){
-	  struct reto reto_aux;
-	  char mensaje[80];
-	  char mensaje2[80];
-	  int num;
-	  sprintf( mensaje, "%d", *result_1 );
-	  sprintf( mensaje2, "%d", *result_1 );
-	  unsigned *d = md5(mensaje, strlen(mensaje));
-	  reto_aux.respuesta = mensaje;
-	  reto_aux.reto = *result_1;
-	  ticket_aux = validar_respuesta_1(&reto_aux, clnt);
-	  pase = *ticket_aux;
-	  pedir_gasolina();
-	}  
+	tiempo = tiempo + dist_ti[dist_o[i]] ;
+      }    
+    } 
+    if (*result_1 > 0){
+      struct reto reto_aux;
+      char mensaje[80];
+      sprintf( mensaje, "%d", *result_1 );
+      unsigned *d = md5(mensaje, strlen(mensaje));
+      reto_aux.respuesta = d;
+      reto_aux.reto = *result_1;
+      ticket_aux = validar_respuesta_1(&reto_aux, clnt);
+      pase = *ticket_aux;
+      pedir_gasolina();
+    }  
 	  
-   }
+  }
 }
 
 int
@@ -335,9 +335,9 @@ main (int argc, char *argv[])
   fprintf(log_bomba,"* Consumo de la bomba: %d\n",consumo);
   int i;
   for(i = 0; i < centros; i++){
-		printf("Nombre Centro : %s\n",dist_n[i]);
-		printf("Host  Centro : %s\n",dist_h[i]);
-		//dist_p[i] = num;
+    printf("Nombre Centro : %s\n",dist_n[i]);
+    printf("Host  Centro : %s\n",dist_h[i]);
+    //dist_p[i] = num;
   }
   while(tiempo <= 480){	  
     int unsleep;
@@ -361,7 +361,7 @@ main (int argc, char *argv[])
       fprintf(log_bomba,"%s","\n Bomba pide gasolina \n");
       if( invactual == inventario)
         fprintf(log_bomba,"No puede ser atendida la bomba \n");
-        fprintf(log_bomba,"* Inventario actual de la bomba: %d\n",inventario);
+      fprintf(log_bomba,"* Inventario actual de la bomba: %d\n",inventario);
     }
     fprintf(log_bomba,"%d %s",tiempo,"min \n");
     fprintf(log_bomba,"* Inventario actual de la bomba: %d\n",inventario);
