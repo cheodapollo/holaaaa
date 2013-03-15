@@ -174,7 +174,11 @@ main (int argc, char **argv)
 	printf("* Suministro del centro: %d\n",suministro);
 	
 	pthread_t monitor;
-		
+
+	FILE *f = popen("/sbin/ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'", "r");
+	fgets(ip, sizeof(ip), f);
+	pclose(f);
+	
 	int arg[1];
 	if ((pthread_create(&monitor, NULL, &monitor_tiempo, (void *) arg)) != 0) 
 		perror("Error!, fallo creacion del hilo monitor del tiempo de simulacion.\n");

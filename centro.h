@@ -20,7 +20,7 @@ int inventario;
 int tiempo;
 int suministro;
 int tiempo_mon;
-//int puerto;
+char ip[50];
 int ocupado[PULL_HILOS];
 
 
