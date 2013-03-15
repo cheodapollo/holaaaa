@@ -14,7 +14,6 @@ int *
 pedir_tiempos_1_svc(int *argp, struct svc_req *rqstp)
 {
 	static int  result;
-
 	result = tiempo;
 	printf("Tiempo es: %d \n",result);
 
@@ -64,10 +63,13 @@ validar_respuesta_1_svc(reto *argp, struct svc_req *rqstp)
 	static ticket  result;
 	char mensaje[80];
 	char mensaje2[80];
+	char mensaje3[80];
 	sprintf( mensaje, "%d", argp->reto );
 	unsigned *d = md5(mensaje, strlen(mensaje));
-	sprintf( mensaje2, "%u", argp->respuesta );
-	if(strcmp(mensaje,mensaje2)==0){
+	sprintf( mensaje2, "%u", *(argp->respuesta) );
+	printf("strcmp es %s %s\n",mensaje3,mensaje2);
+	sprintf( mensaje3, "%u", *d );
+	if(strcmp(mensaje3,mensaje2)==0){
 	  result.numero = 1;
 	  result.ip_bomba = nombre;
 	  result.hora = 1;
