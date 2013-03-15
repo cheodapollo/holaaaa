@@ -249,15 +249,13 @@ void pedir_tiempos(){
       exit (1);
     }
 #endif	/* DEBUG */
-	
-    result_1 = pedir_tiempos_1(pedir_tiempos_1_arg, clnt);
+    result_1 = pedir_tiempos_1(&pedir_tiempos_1_arg, clnt);
     if (result_1 == (int *) NULL) {
       clnt_perror (clnt, "call failed");
     }
     else{
       //printf("TIEMPO ES: %d \n",*result_1);
     }
-	
     dist_ti[i] = *result_1;
     //printf("El tiempo del arreglo: %d \n",dist_ti[i]);
 #ifndef	DEBUG
