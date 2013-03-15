@@ -29,7 +29,8 @@ pedir_gasolina_1_svc(ticket *argp, struct svc_req *rqstp)
     int r;
     //printf("Valor de hora: %d",argp.hora);
     //PREGUNTAR URGENTE
-    if (aux.hora == 1){
+    if (tiempo_mon - aux.hora <= 60){
+      printf("mostrar el tiempo actual y el tiempo del ticket: %d , %d \n",tiempo_mon,aux.hora);
       if(inventario >= 38000){
         pthread_mutex_lock( &mutex_inventario );
         inventario -= 38000;
@@ -49,6 +50,7 @@ pedir_gasolina_1_svc(ticket *argp, struct svc_req *rqstp)
       }
     }  
     else{
+      printf("genero numero rand \n");
       int randNum;
       srand(time(NULL));
       randNum = rand () % (101) + 0; 
@@ -67,12 +69,13 @@ validar_respuesta_1_svc(reto *argp, struct svc_req *rqstp)
 	sprintf( mensaje, "%d", argp->reto );
 	unsigned *d = md5(mensaje, strlen(mensaje));
 	sprintf( mensaje2, "%u", *(argp->respuesta) );
-	printf("strcmp es %s %s\n",mensaje3,mensaje2);
 	sprintf( mensaje3, "%u", *d );
+	printf("strcmp es %s %s\n",mensaje3,mensaje2);
 	if(strcmp(mensaje3,mensaje2)==0){
+	  printf("paso \n");
 	  result.numero = 1;
 	  result.ip_bomba = nombre;
-	  result.hora = 1;
+	  result.hora = tiempo_mon;
 	}  
 
 	return &result;

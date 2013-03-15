@@ -150,7 +150,7 @@ void * monitor_tiempo(void *param){
     usleep (100000);
     ++tiempo_mon;
     printf("tiempo es: %d \n",tiempo_mon);
-    printf("El inventario es : %d \n",inventario);
+    //printf("El inventario es : %d \n",inventario);
   }
   printf("Se ha termiando la simulacion del centro\n");
   exit(0);
