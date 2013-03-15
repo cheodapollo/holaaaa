@@ -74,8 +74,16 @@ validar_respuesta_1_svc(reto *argp, struct svc_req *rqstp)
 	if(strcmp(mensaje3,mensaje2)==0){
 	  printf("paso \n");
 	  result.numero = 1;
-	  result.ip_bomba = nombre;
+
 	  result.hora = tiempo_mon;
+
+	  FILE *f = popen("/sbin/ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'", "r");
+	  char ip_str[50];
+	  fgets(ip_str, sizeof(ip_str), f);
+	  pclose(f);
+	  result.ip_bomba = ip_str;
+
+
 	}  
 
 	return &result;
