@@ -9,6 +9,7 @@
 #include "md5.h"
 
 pthread_mutex_t mutex_inventario = PTHREAD_MUTEX_INITIALIZER;
+int cont =0;
 
 int *
 pedir_tiempos_1_svc(int *argp, struct svc_req *rqstp)
@@ -29,13 +30,16 @@ pedir_gasolina_1_svc(ticket *argp, struct svc_req *rqstp)
   int r;
   //printf("Valor de hora: %d",argp.hora);
   //PREGUNTAR URGENTE
-  if (tiempo_mon - aux.hora <= 60 && strcmp(aux.ip_bomba,ip) == 0){
+  printf("mostrar el ip y el ip del ticket: %s , %s \n",ip,aux.ip_bomba);
+  
+  if (tiempo_mon - aux.hora <= 60){
     printf("mostrar el tiempo actual y el tiempo del ticket: %d , %d \n",tiempo_mon,aux.hora);
     if(inventario >= 38000){
       pthread_mutex_lock( &mutex_inventario );
       inventario -= 38000;
       pthread_mutex_unlock( &mutex_inventario );
       //pthread_mutex_lock( &mutex_log );
+      fprintf(log_centro,"Acepto el ticket numero: %d \n",aux.numero);
       fprintf(log_centro,"Evento en el tiempo %d:\n\tEl cliente solicita gasolina y el centro puede responder la peticion\n",tiempo_mon);
       fprintf(log_centro,"\tInventario actual del centro: %d\n",inventario);
       //pthread_mutex_unlock( &mutex_log );
@@ -43,6 +47,7 @@ pedir_gasolina_1_svc(ticket *argp, struct svc_req *rqstp)
     }  
     else{
       //pthread_mutex_lock( &mutex_log );
+      fprintf(log_centro,"Acepto el ticket numero: %d \n",aux.numero);
       fprintf(log_centro,"Evento en el tiempo %d:\n\tEl cliente solicita gasolina y el centro no puede responder la peticion\n",tiempo_mon);
       fprintf(log_centro,"\tInventario actual del centro: %d\n",inventario);
       //pthread_mutex_unlock( &mutex_log );
@@ -50,6 +55,7 @@ pedir_gasolina_1_svc(ticket *argp, struct svc_req *rqstp)
     }
   }  
   else{
+    fprintf(log_centro,"Rechazo el ticket numero: %d \n",aux.numero);
     printf("genero numero rand \n");
     int randNum;
     srand(time(NULL));
@@ -72,12 +78,14 @@ validar_respuesta_1_svc(reto *argp, struct svc_req *rqstp)
   sprintf( mensaje3, "%u", *d );
   printf("strcmp es %s %s\n",mensaje3,mensaje2);
   if(strcmp(mensaje3,mensaje2)==0){
-    printf("paso \n");
-    result.numero = 1;
-
+    result.numero = cont++;
     result.hora = tiempo_mon;
-    result.ip_bomba = ip;
-
+    FILE *f = popen("/sbin/ifconfig wlan0 | grep 'inet:' | cut -d: -f2 | awk '{ print $1}'", "r");
+    fgets(ip, sizeof(ip), f);
+    pclose(f);
+    result.ip_bomba =  malloc(sizeof(char*)*strlen(ip));
+    strcpy(result.ip_bomba,ip);
+    printf("el ip del ticket: %s \n",result.ip_bomba);
 
   }  
 

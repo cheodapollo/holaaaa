@@ -330,7 +330,7 @@ main (int argc, char *argv[])
   fprintf(log_bomba,"* Nombre de la bomba: %s\n",nombre);
   fprintf(log_bomba,"* Capacidad maxima de la bomba: %d\n",capacidad); 
   fprintf(log_bomba,"* Inventario de la bomba: %d\n",inventario);
-  fprintf(log_bomba,"* Consumo de la bomba: %d\n",consumo);
+  fprintf(log_bomba,"* Consumo de la bomba: %d\n",consumo); 
   int i;
   for(i = 0; i < centros; i++){
     printf("Nombre Centro : %s\n",dist_n[i]);
@@ -357,6 +357,7 @@ main (int argc, char *argv[])
       int invactual = inventario;
       pedir_gasolina();
       fprintf(log_bomba,"%s","\n Bomba pide gasolina \n");
+      fprintf(log_bomba,"El ticket actual es el numero: %d \n",pase.numero);
       if( invactual == inventario)
         fprintf(log_bomba,"No puede ser atendida la bomba \n");
       fprintf(log_bomba,"* Inventario actual de la bomba: %d\n",inventario);

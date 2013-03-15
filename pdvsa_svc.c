@@ -150,7 +150,7 @@ void * monitor_tiempo(void *param){
     usleep (100000);
     ++tiempo_mon;
     printf("tiempo es: %d \n",tiempo_mon);
-    //printf("El inventario es : %d \n",inventario);
+    printf("El inventario es : %d \n",inventario);
   }
   printf("Se ha termiando la simulacion del centro\n");
   exit(0);
@@ -175,10 +175,9 @@ main (int argc, char **argv)
 	
 	pthread_t monitor;
 
-	FILE *f = popen("/sbin/ifconfig wlan0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'", "r");
+	FILE *f = popen("/sbin/ifconfig wlan0 | grep 'inet:' | cut -d: -f2 | awk '{ print $1}'", "r");
 	fgets(ip, sizeof(ip), f);
 	pclose(f);
-	
 	int arg[1];
 	if ((pthread_create(&monitor, NULL, &monitor_tiempo, (void *) arg)) != 0) 
 		perror("Error!, fallo creacion del hilo monitor del tiempo de simulacion.\n");
